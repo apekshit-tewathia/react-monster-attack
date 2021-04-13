@@ -13,13 +13,46 @@ class Game extends React.Component {
       myHealth: 100,
       monsterHealth: 100,
     };
+    this.defaultState = this.state;
+  }
+
+  randomInteger(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  updatedHealth(key, percentage) {
+    return this.state[key] + (percentage / 100.0) * this.state[key];
   }
 
   gameStart() {
-    this.setState({ ...this.state, gameStarted: false, gameStarted: true });
+    this.setState({ ...this.state, gameStarted: true });
   }
 
-  attackHandler() {}
+  updateHealth(key, value) {
+    this.setState(
+      {
+        ...this.state,
+        [key]: value,
+      },
+      () => {
+        this.checkIfGameOver(value);
+      }
+    );
+  }
+
+  checkIfGameOver(value) {
+    if (value < 80) {
+      alert("Game Over");
+      this.setState(this.defaultState);
+    }
+  }
+
+  attackHandler() {
+    this.updateHealth(
+      "monsterHealth",
+      this.updatedHealth("monsterHealth", -this.randomInteger(1, 10))
+    );
+  }
 
   specialAttackHandler() {}
 
