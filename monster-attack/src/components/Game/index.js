@@ -29,6 +29,11 @@ class Game extends React.Component {
     this.setState({ ...this.state, gameStarted: true });
   }
 
+  storeState(state) {
+    this.moves.push(state);
+    console.log(this.moves);
+  }
+
   updateHealth(key, perc) {
     this.setState(
       (state, props) => {
