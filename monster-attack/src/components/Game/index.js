@@ -20,45 +20,58 @@ class Game extends React.Component {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  updatedHealth(key, percentage) {
-    return this.state[key] + (percentage / 100.0) * this.state[key];
+  updatedHealth(state, key, percentage) {
+    const value = state[key] + (percentage / 100.0) * state[key];
+    return value > 100 ? 100 : value;
   }
 
   gameStart() {
     this.setState({ ...this.state, gameStarted: true });
   }
 
-  updateHealth(key, value) {
+  updateHealth(key, perc) {
     this.setState(
-      {
-        ...this.state,
-        [key]: value,
+      (state, props) => {
+        return {
+          ...state,
+          [key]: this.updatedHealth(state, key, perc),
+        };
       },
       () => {
-        this.checkIfGameOver(value);
+        this.checkIfGameOver(this.state[key]);
       }
     );
   }
 
   checkIfGameOver(value) {
     if (value < 80) {
-      alert("Game Over");
-      this.setState(this.defaultState);
+      this.giveUpHandler();
     }
   }
 
   attackHandler() {
-    this.updateHealth(
-      "monsterHealth",
-      this.updatedHealth("monsterHealth", -this.randomInteger(1, 10))
-    );
+    this.updateHealth("monsterHealth", -this.randomInteger(1, 10));
+    this.updateHealth("myHealth", -this.randomInteger(1, 10));
   }
 
-  specialAttackHandler() {}
+  specialAttackHandler() {
+    if (this.state.myHealth > 90) {
+      this.updateHealth("monsterHealth", -this.randomInteger(11, 20));
+      this.updateHealth("myHealth", -this.randomInteger(1, 10));
+    } else {
+      alert("Not allowed");
+    }
+  }
 
-  healHandler() {}
+  healHandler() {
+    this.updateHealth("myHealth", 10);
+    this.updateHealth("myHealth", -this.randomInteger(1, 10));
+  }
 
-  giveUpHandler() {}
+  giveUpHandler() {
+    alert("Game Over");
+    this.setState(this.defaultState);
+  }
 
   render() {
     let componentToBeRendered = null;
