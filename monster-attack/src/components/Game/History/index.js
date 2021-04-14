@@ -1,10 +1,13 @@
 import React from "react";
-import PropTypes from "prop-types";
 
-const index = (props) => {
-  return <div></div>;
+const History = (props) => {
+  return (
+    <ul>
+      {props.moves.map((move, index) => {
+        return <li key={index}>{move.message}</li>;
+      })}
+    </ul>
+  );
 };
 
-index.propTypes = {};
-
-export default index;
+export default History;

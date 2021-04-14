@@ -21,26 +21,40 @@ class Game extends React.Component {
   }
 
   updatedHealth(state, key, percentage) {
-    const value = state[key] + (percentage / 100.0) * state[key];
-    return value > 100 ? 100 : value;
+    return state[key] + this.damageDone(state[key], percentage);
+  }
+
+  damageDone(value, percentage) {
+    return (percentage / 100.0) * value;
   }
 
   gameStart() {
     this.setState({ ...this.state, gameStarted: true });
   }
 
-  storeState(state) {
-    this.moves.push(state);
+  storeState(state, message) {
+    this.moves.push({
+      state,
+      message,
+    });
     console.log(this.moves);
   }
 
-  updateHealth(key, perc) {
+  updateHealth(key, perc, action) {
     this.setState(
       (state, props) => {
-        return {
+        let updatedState = {
           ...state,
           [key]: this.updatedHealth(state, key, perc),
         };
+        // To discuss - Can this be done somewhere else?
+        const message = this.actionMessage(
+          key,
+          Math.abs(this.damageDone(state[key], perc)),
+          action
+        );
+        this.storeState(updatedState, message);
+        return updatedState;
       },
       () => {
         this.checkIfGameOver(this.state[key]);
@@ -55,27 +69,54 @@ class Game extends React.Component {
   }
 
   attackHandler() {
-    this.updateHealth("monsterHealth", -this.randomInteger(1, 10));
-    this.updateHealth("myHealth", -this.randomInteger(1, 10));
+    this.updateHealth("monsterHealth", -this.randomInteger(1, 10), "attack");
+    this.updateHealth("myHealth", -this.randomInteger(1, 10), "attack");
   }
 
   specialAttackHandler() {
     if (this.state.myHealth > 90) {
-      this.updateHealth("monsterHealth", -this.randomInteger(11, 20));
-      this.updateHealth("myHealth", -this.randomInteger(1, 10));
+      this.updateHealth(
+        "monsterHealth",
+        -this.randomInteger(11, 20),
+        "special attack"
+      );
+      this.updateHealth("myHealth", -this.randomInteger(1, 10), "attack");
     } else {
       alert("Not allowed");
     }
   }
 
   healHandler() {
-    this.updateHealth("myHealth", 10);
-    this.updateHealth("myHealth", -this.randomInteger(1, 10));
+    this.updateHealth("myHealth", 10, "heal");
+    this.updateHealth("myHealth", -this.randomInteger(1, 10), "attack");
+  }
+
+  actionMessage(turn, damageDone, action) {
+    if (action === "attack") {
+      if (turn === "monsterHealth") {
+        return `Player hits monster for ${damageDone}`;
+      } else if (turn === "myHealth") {
+        return `Monster hits player for ${damageDone}`;
+      }
+    } else if (action === "special attack") {
+      if (turn === "monsterHealth") {
+        return `Player hits monster hard for ${damageDone}`;
+      } else if (turn === "myHealth") {
+        return `Monster hits player hard for ${damageDone}`;
+      }
+    } else if (action === "heal") {
+      if (turn === "monsterHealth") {
+        return `Monster heals for ${damageDone}`;
+      } else if (turn === "myHealth") {
+        return `Player heals for ${damageDone}`;
+      }
+    }
   }
 
   giveUpHandler() {
     alert("Game Over");
     this.setState(this.defaultState);
+    this.moves = [];
   }
 
   render() {
