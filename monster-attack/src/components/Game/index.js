@@ -36,12 +36,7 @@ class Game extends React.Component {
     return Math.round((percentage / 100.0) * value);
   }
 
-  gameStart() {
-    this.setState({ ...this.state, gameStarted: true });
-  }
-
   storeState(state, message) {
-    // Storing state is not needed, but storing it to implement time traveling at some later point
     this.moves.push({
       state,
       message,
@@ -74,6 +69,10 @@ class Game extends React.Component {
     if (value < gameOverValue) {
       this.giveUpHandler();
     }
+  }
+
+  gameStart() {
+    this.setState({ ...this.state, gameStarted: true });
   }
 
   attackHandler() {
@@ -118,6 +117,16 @@ class Game extends React.Component {
     );
   }
 
+  giveUpHandler() {
+    alert("Game Over");
+    this.setState(this.defaultState);
+    this.moves = [];
+  }
+
+  historyClickHandler(move) {
+    this.setState(move.state);
+  }
+
   actionMessage(turn, damageDone, action) {
     if (action === "attack") {
       if (turn === "monsterHealth") {
@@ -138,16 +147,6 @@ class Game extends React.Component {
         return `Player heals for ${damageDone}`;
       }
     }
-  }
-
-  giveUpHandler() {
-    alert("Game Over");
-    this.setState(this.defaultState);
-    this.moves = [];
-  }
-
-  historyClickHandler(move) {
-    this.setState(move.state);
   }
 
   render() {
