@@ -4,6 +4,14 @@ import HealthMeter from "components/Game/HealthMeter";
 import ActionButtons from "components/Game/ActionButtons";
 import History from "components/Game/History";
 
+const healPercentage = 10;
+const gameOverValue = 10;
+const specialAttackMinimum = 90;
+const attackMinPercentage = 1;
+const attackMaxPercentage = 10;
+const specialAttackMinPercentage = 11;
+const specialAttackMaxPercentage = 20;
+
 class Game extends React.Component {
   constructor() {
     super();
@@ -20,12 +28,12 @@ class Game extends React.Component {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  updatedHealth(state, key, percentage) {
-    return state[key] + this.damageDone(state[key], percentage);
+  updatedHealth(currentHealth, percentage) {
+    return currentHealth + this.damageDone(currentHealth, percentage);
   }
 
   damageDone(value, percentage) {
-    return (percentage / 100.0) * value;
+    return Math.round((percentage / 100.0) * value);
   }
 
   gameStart() {
@@ -33,11 +41,11 @@ class Game extends React.Component {
   }
 
   storeState(state, message) {
+    // Storing state is not needed, but storing it to implement time traveling at some later point
     this.moves.push({
       state,
       message,
     });
-    console.log(this.moves);
   }
 
   updateHealth(key, perc, action) {
@@ -45,7 +53,7 @@ class Game extends React.Component {
       (state, props) => {
         let updatedState = {
           ...state,
-          [key]: this.updatedHealth(state, key, perc),
+          [key]: this.updatedHealth(state[key], perc),
         };
         // To discuss - Can this be done somewhere else?
         const message = this.actionMessage(
@@ -63,32 +71,51 @@ class Game extends React.Component {
   }
 
   checkIfGameOver(value) {
-    if (value < 80) {
+    if (value < gameOverValue) {
       this.giveUpHandler();
     }
   }
 
   attackHandler() {
-    this.updateHealth("monsterHealth", -this.randomInteger(1, 10), "attack");
-    this.updateHealth("myHealth", -this.randomInteger(1, 10), "attack");
+    this.updateHealth(
+      "monsterHealth",
+      -this.randomInteger(attackMinPercentage, attackMaxPercentage),
+      "attack"
+    );
+    this.updateHealth(
+      "myHealth",
+      -this.randomInteger(attackMinPercentage, attackMaxPercentage),
+      "attack"
+    );
   }
 
   specialAttackHandler() {
-    if (this.state.myHealth > 90) {
+    if (this.state.myHealth > specialAttackMinimum) {
       this.updateHealth(
         "monsterHealth",
-        -this.randomInteger(11, 20),
+        -this.randomInteger(
+          specialAttackMinPercentage,
+          specialAttackMaxPercentage
+        ),
         "special attack"
       );
-      this.updateHealth("myHealth", -this.randomInteger(1, 10), "attack");
+      this.updateHealth(
+        "myHealth",
+        -this.randomInteger(attackMinPercentage, attackMaxPercentage),
+        "attack"
+      );
     } else {
       alert("Not allowed");
     }
   }
 
   healHandler() {
-    this.updateHealth("myHealth", 10, "heal");
-    this.updateHealth("myHealth", -this.randomInteger(1, 10), "attack");
+    this.updateHealth("myHealth", healPercentage, "heal");
+    this.updateHealth(
+      "myHealth",
+      -this.randomInteger(attackMinPercentage, attackMaxPercentage),
+      "attack"
+    );
   }
 
   actionMessage(turn, damageDone, action) {
