@@ -7,8 +7,10 @@ import History from "components/Game/History";
 const healPercentage = 10;
 const gameOverValue = 10;
 const specialAttackMinimum = 90;
-const attackMinPercentage = 1;
-const attackMaxPercentage = 10;
+const playerAttackMinPercentage = 1;
+const playerAttackMaxPercentage = 10;
+const monsterAttackMinPercentage = 10;
+const monsterAttackMaxPercentage = 10;
 const specialAttackMinPercentage = 11;
 const specialAttackMaxPercentage = 20;
 
@@ -78,12 +80,15 @@ class Game extends React.Component {
   attackHandler() {
     this.updateHealth(
       "monsterHealth",
-      -this.randomInteger(attackMinPercentage, attackMaxPercentage),
+      -this.randomInteger(playerAttackMinPercentage, playerAttackMaxPercentage),
       "attack"
     );
     this.updateHealth(
       "myHealth",
-      -this.randomInteger(attackMinPercentage, attackMaxPercentage),
+      -this.randomInteger(
+        monsterAttackMinPercentage,
+        monsterAttackMaxPercentage
+      ),
       "attack"
     );
   }
@@ -100,7 +105,10 @@ class Game extends React.Component {
       );
       this.updateHealth(
         "myHealth",
-        -this.randomInteger(attackMinPercentage, attackMaxPercentage),
+        -this.randomInteger(
+          monsterAttackMinPercentage,
+          monsterAttackMaxPercentage
+        ),
         "attack"
       );
     } else {
@@ -112,7 +120,10 @@ class Game extends React.Component {
     this.updateHealth("myHealth", healPercentage, "heal");
     this.updateHealth(
       "myHealth",
-      -this.randomInteger(attackMinPercentage, attackMaxPercentage),
+      -this.randomInteger(
+        monsterAttackMinPercentage,
+        monsterAttackMaxPercentage
+      ),
       "attack"
     );
   }
