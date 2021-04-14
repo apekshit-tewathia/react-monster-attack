@@ -146,6 +146,10 @@ class Game extends React.Component {
     this.moves = [];
   }
 
+  historyClickHandler(move) {
+    this.setState(move.state);
+  }
+
   render() {
     let componentToBeRendered = null;
     if (this.state.gameStarted) {
@@ -159,7 +163,12 @@ class Game extends React.Component {
             giveUpHandler={() => this.giveUpHandler()}
             healHandler={() => this.healHandler()}
           />
-          <History moves={this.moves} />
+          <History
+            moves={this.moves}
+            clicked={(move) => {
+              this.historyClickHandler(move);
+            }}
+          />
         </>
       );
     } else {
