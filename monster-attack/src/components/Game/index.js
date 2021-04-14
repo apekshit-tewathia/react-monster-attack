@@ -123,8 +123,9 @@ class Game extends React.Component {
     this.moves = [];
   }
 
-  historyClickHandler(move) {
+  historyClickHandler(move, index) {
     this.setState(move.state);
+    this.moves = this.moves.slice(0, index + 1);
   }
 
   actionMessage(turn, damageDone, action) {
@@ -164,8 +165,8 @@ class Game extends React.Component {
           />
           <History
             moves={this.moves}
-            clicked={(move) => {
-              this.historyClickHandler(move);
+            clicked={(move, index) => {
+              this.historyClickHandler(move, index);
             }}
           />
         </>
