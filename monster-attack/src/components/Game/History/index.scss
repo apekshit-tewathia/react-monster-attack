@@ -1,0 +1,10 @@
+.history-list .history-tile:nth-child(even) {
+  background-color: white;
+}
+.history-list .history-tile:nth-child(odd) {
+  background-color: lightcoral;
+}
+
+.history-list li {
+  cursor: pointer;
+}
